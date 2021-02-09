@@ -3,11 +3,13 @@ import generateData from "../generateData";
 import moment from "moment";
 import StackedForm from "../../Forms/RegularForms/StackedForm";
 import AddCategoriesForm from "../../Forms/RegularForms/AddCategoriesForm";
+import UpdateCategory from "./UpdateCategory";
 const data = generateData(10);
 
 class CategoriesTable extends React.Component {
   state = {
     data: [],
+    displayModal: false,
   };
   async componentDidMount() {
     const response = await fetch("http://localhost:8000/api/categories");
@@ -17,6 +19,10 @@ class CategoriesTable extends React.Component {
       data: categories.data,
     });
   }
+  close = (e) => {
+    e.preventDefault();
+    this.setState({ displayModal: false });
+  };
   addCategory = async (e) => {
     e.preventDefault();
     console.log("cat_form", e.target.name.value);
@@ -41,9 +47,72 @@ class CategoriesTable extends React.Component {
     data.push(category);
     this.setState({ data });
   };
+  deleteItem = async (e, id) => {
+    e.preventDefault();
+    console.log(id);
+    const response = await fetch(`http://localhost:8000/api/categories/${id}`, {
+      method: "DELETE",
+    });
+    const result = await response.json();
+    console.log(result);
+    if (result) {
+      const originalData = [...this.state.data];
+      const data = originalData.filter((item) => item.id !== id);
+      this.setState({ data });
+    }
+  };
+  updateItem = (e, id) => {
+    e.preventDefault();
+    console.log(id);
+    const result = this.state.data.find((item) => {
+      return item.id === id;
+    });
+    console.log(result);
+    this.setState({ displayModal: true, selectedItem: result });
+  };
+  editCategory = async (e) => {
+    e.preventDefault();
+    console.log(this.state.selectedItem);
+    const body = new FormData();
+    body.append("name", e.target.name.value);
+    body.append("description", e.target.description.value);
+    const response = await fetch(
+      `http://localhost:8000/api/categories/${this.state.selectedItem.id}?_method=PUT`,
+      {
+        method: "POST",
+        body,
+      }
+    );
+    const result = await response.json();
+    console.log(
+      "result",
+      result
+    ); /* 
+    const oldData = [...this.state.data]; */
+
+    //const data = oldData.filter((item) => item.id !== result.data.id);
+    const data = this.state.data.map((cat) => {
+      if (cat.id === result.data.id) {
+        return result.data;
+      } else return cat;
+    });
+    /*  data.push(result.data); */
+    this.setState({ data });
+  };
   render() {
     return (
       <div>
+        {this.state.displayModal && (
+          <UpdateCategory
+            close={this.close}
+            editCategory={this.editCategory}
+            initialValues={{
+              name: this.state.selectedItem.name,
+              description: this.state.selectedItem.description,
+            }}
+          />
+        )}
+
         <AddCategoriesForm addCategory={this.addCategory} />
         <div className="card">
           <div className="header text-center">
@@ -84,6 +153,7 @@ class CategoriesTable extends React.Component {
                         title=""
                         className="btn btn-success btn-simple btn-icon"
                         data-original-title="Edit Post"
+                        onClick={(e) => this.updateItem(e, item.id)}
                       >
                         <i className="fa fa-edit"></i>
                       </button>
@@ -94,6 +164,7 @@ class CategoriesTable extends React.Component {
                         title=""
                         className="btn btn-danger btn-simple btn-icon "
                         data-original-title="Remove Post"
+                        onClick={(e) => this.deleteItem(e, item.id)}
                       >
                         <i className="fa fa-times"></i>
                       </button>

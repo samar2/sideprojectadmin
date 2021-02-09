@@ -38,13 +38,6 @@ const AddCategoryForm = ({
           <label className="control-label">Description</label>
           <Field name="description" type="text" component={renderField} />
         </div>
-        {/* 
-        <Field
-          name="newsletter"
-          type="checkbox"
-          component={renderField}
-          label="Subscribe to newsletter"
-        /> */}
 
         <button
           type="submit"

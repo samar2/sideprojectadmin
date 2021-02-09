@@ -1,5 +1,5 @@
-import React from 'react';
-import cx from 'classnames';
+import React from "react";
+import cx from "classnames";
 
 const TextInput = ({
   input,
@@ -9,25 +9,26 @@ const TextInput = ({
   inputClassName,
   placeholder,
   helpText,
-  disabled
+  disabled,
 }) => (
   <div>
     <input
       {...input}
       type={type}
-      className={cx(inputClassName, 'form-control', {
-        error: !!error
+      className={cx(inputClassName, "form-control", {
+        error: !!error,
       })}
       placeholder={placeholder}
-      disabled={disabled} />
+      disabled={disabled}
+    />
 
-    { touched && error &&
-      <label className="error" htmlFor={input.name}>{error}</label>
-    }
+    {touched && error && (
+      <label className="error" htmlFor={input.name}>
+        {error}
+      </label>
+    )}
 
-    { helpText &&
-      <span className="help-block">{helpText}</span>
-    }
+    {helpText && <span className="help-block">{helpText}</span>}
   </div>
 );
 
