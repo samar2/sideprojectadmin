@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { toggleMobileNavVisibility } from "../../reducers/Layout";
+
 import {
   Navbar,
   Nav,
@@ -11,8 +12,13 @@ import {
   FormControl,
 } from "react-bootstrap";
 
-const Header = ({ showMobileMenu, toggleMobileNavVisibility }) => (
+const Header = ({
+  showMobileMenu,
+  toggleMobileNavVisibility,
+  readingState,
+}) => (
   <Navbar fluid={true}>
+    {console.log("PROPS ", readingState)}
     <Navbar.Header>
       <button
         type="button"
@@ -62,8 +68,14 @@ const Header = ({ showMobileMenu, toggleMobileNavVisibility }) => (
   </Navbar>
 );
 
+// To read State from redux
+const mapStateToProp = (state) => ({
+  mobileNavVisibility: state.Layout.mobileNavVisibility,
+  readingState: state.Layout.name,
+});
+
 const mapDispatchToProp = (dispatch) => ({
   toggleMobileNavVisibility: () => dispatch(toggleMobileNavVisibility()),
 });
 
-export default connect(null, mapDispatchToProp)(Header);
+export default connect(mapStateToProp, mapDispatchToProp)(Header);
