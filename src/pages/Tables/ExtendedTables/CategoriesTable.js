@@ -1,6 +1,8 @@
 import React from "react";
 import generateData from "../generateData";
+import axios from "axios";
 import moment from "moment";
+import ls from "local-storage";
 import StackedForm from "../../Forms/RegularForms/StackedForm";
 import AddCategoriesForm from "../../Forms/RegularForms/AddCategoriesForm";
 import UpdateCategory from "./UpdateCategory";
@@ -30,11 +32,29 @@ class CategoriesTable extends React.Component {
     const body = new FormData();
     body.append("name", e.target.name.value);
     body.append("description", e.target.description.value);
-    const response = await fetch("http://localhost:8000/api/categories", {
-      method: "POST",
+    const token = ls.get("token");
+    const result = await axios.post(
+      "http://localhost:8000/api/categories",
       body,
-    });
-    const result = await response.json();
+      {
+        headers: {
+          "content-type": "multipart/form-data",
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+    /*  const response = await fetch("http://localhost:8000/api/categories", {
+      method: "POST",
+      headers: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          /* "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
+      body,
+    }); */
+    //const result = await response.json();
     console.log(result);
     const category = {
       id: result.data.id,
